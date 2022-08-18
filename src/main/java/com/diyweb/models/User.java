@@ -9,6 +9,7 @@ import org.jasypt.util.password.StrongPasswordEncryptor;
 import internal.com.sun.istack.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -52,7 +53,7 @@ public class User implements Serializable{
     @OneToMany
     private List<Comment> comments;
     
-    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private UserEmailToken userToken;
     private UUID userIdentifier;
     

@@ -10,6 +10,7 @@ import com.diyweb.repo.UserRepoInterface;
 import jakarta.inject.Inject;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -39,16 +40,17 @@ public class RegisterServlet extends HttpServlet {
 			userRepository.persist(user);
 			User retrievedUser = userRepository.getUserByEmail(user.getEmail());
 			try {
-				MailUtils.sendMessage(retrievedUser.getEmail(), retrievedUser, "http://localhost:8080/DIYWebsite", "mail.properties", "gmail_user.properties");
+				MailUtils.sendMessage(retrievedUser.getEmail(), retrievedUser, "http://localhost:8080/DIYWebsite", "gmail.properties", "gmail_user.properties");
 			} catch (IOException | MessagingException e) {
 				System.out.println("Register message sending failed due to: "+e.getMessage());
 				e.printStackTrace();
 			}
 			//TODO: save token and mail
 		}
-		RequestDispatcher dispatcher = req.getRequestDispatcher("./");
-		dispatcher.forward(req, resp);
+		RequestDispatcher dispatcher = req.getRequestDispatcher("/");
+		dispatcher.include(req, resp);
 		
 	}
+	
 	
 }

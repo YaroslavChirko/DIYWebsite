@@ -12,12 +12,19 @@ import com.diyweb.models.Post;
 import com.diyweb.models.User;
 
 import jakarta.annotation.PreDestroy;
+import jakarta.annotation.Resource;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import jakarta.transaction.HeuristicMixedException;
+import jakarta.transaction.HeuristicRollbackException;
+import jakarta.transaction.NotSupportedException;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.UserTransaction;
 
 /**
  * Post repository implementation, contains methods for getting all posts, posts by specific user,<br/>
@@ -36,10 +43,18 @@ public class PostRepositoryImpl implements PostRepoInterface, Serializable {
 	@PersistenceContext(unitName = "diyWebUnit")
 	EntityManager entityManager;
 	
+	@Resource
+	UserTransaction transaction;
 	
 	@Override
 	public void persist(Post post) {
-		entityManager.persist(post);		
+		try {
+			transaction.begin();
+			entityManager.persist(post);
+			transaction.commit();
+		}catch(NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+			e.printStackTrace();
+		}	
 	}
 
 	@Override
@@ -117,8 +132,6 @@ public class PostRepositoryImpl implements PostRepoInterface, Serializable {
 		boolean cathegoryChanged = false;
 		boolean picturesChanged = false;
 		
-		entityManager.getTransaction().begin();
-		
 		if(!(current.getTitle().equals(post.getTitle()))) {
 			current.setTitle(post.getTitle());
 			titleChanged = true;
@@ -138,6 +151,17 @@ public class PostRepositoryImpl implements PostRepoInterface, Serializable {
 			current.setPictureUrls(post.getPictureUrls());
 			picturesChanged = true;
 		}
+		
+		try {
+			transaction.begin();
+				entityManager.merge(current);
+			transaction.commit();
+		}catch(NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
 		
 		
 		return titleChanged || bodyChanged || cathegoryChanged || picturesChanged;

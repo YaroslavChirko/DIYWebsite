@@ -81,14 +81,31 @@ public class UserRepositoryImpl implements UserRepoInterface, Serializable {
 			return false;
 		}
 		
-		//entityManager.getTransaction().begin();
-		
-		current.setName(user.getName());
-		
-		//entityManager.getTransaction().commit();
-		
+		try {
+			current.setName(user.getName());
+			transaction.begin();
+				entityManager.merge(current);
+			transaction.commit();
+		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+			e.printStackTrace();
+		}
 		
 		return true;
+	}
+	
+	public void updateVerificationStatus(String userEmail) {
+		User persistedUser = getUserByEmail(userEmail);
+		
+		try {
+			persistedUser.setUserToken(null);
+			persistedUser.setVerified(true);
+			transaction.begin();
+				entityManager.merge(persistedUser);
+			transaction.commit();
+		}catch(NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	@PreDestroy

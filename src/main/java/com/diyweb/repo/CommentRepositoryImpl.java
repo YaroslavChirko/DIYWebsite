@@ -8,11 +8,18 @@ import java.util.stream.Collectors;
 import com.diyweb.models.Comment;
 import com.diyweb.models.Post;
 
+import jakarta.annotation.Resource;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import jakarta.transaction.HeuristicMixedException;
+import jakarta.transaction.HeuristicRollbackException;
+import jakarta.transaction.NotSupportedException;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.UserTransaction;
 
 /**
  * Commentary repository implementation, it allows us to get all comments for the specific post,<br/>
@@ -32,10 +39,18 @@ public class CommentRepositoryImpl implements CommentRepoInterface, Serializable
 	@PersistenceContext( unitName = "diyWebUnit")
 	EntityManager entityManager;
 	
+	@Resource
+	UserTransaction transaction;
+	
 	@Override
 	public void persist(Comment comment) {
-		entityManager.persist(comment);
-		
+		try {
+			transaction.begin();
+				entityManager.persist(comment);
+			transaction.commit();
+		}catch(NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -60,18 +75,26 @@ public class CommentRepositoryImpl implements CommentRepoInterface, Serializable
 			return false;
 		}
 		
-		entityManager.getTransaction().begin();
-		current.setBody(comment.getBody());
-		entityManager.getTransaction().commit();
+		try {
+			transaction.begin();
+				current.setBody(comment.getBody());
+			transaction.commit();
+		}catch(NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+			e.printStackTrace();
+		}
 		return true;
 	}
 
 	@Override
 	public void addReply(Comment reply, Comment toReply) {
-		entityManager.getTransaction().begin();
-		reply.setReplyingTo(toReply);
-		entityManager.persist(reply);
-		entityManager.getTransaction().commit();
+		try {
+			transaction.begin();
+				reply.setReplyingTo(toReply);
+				entityManager.persist(reply);
+			transaction.commit();
+		}catch(NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+			e.printStackTrace();
+		}
 		
 	}
 

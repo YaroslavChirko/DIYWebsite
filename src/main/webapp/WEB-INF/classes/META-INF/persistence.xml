@@ -6,7 +6,7 @@
 	<persistence-unit name="diyWebUnit" transaction-type="JTA">
 		<jta-data-source>java:app/jdbc/diyWebDatasource</jta-data-source>
 		<properties>
-			<property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create" />
+			<property name="jakarta.persistence.schema-generation.database.action" value="create" />
 		</properties>
 	</persistence-unit>
 	

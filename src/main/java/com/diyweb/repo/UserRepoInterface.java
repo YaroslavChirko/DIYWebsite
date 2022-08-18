@@ -9,6 +9,7 @@ public interface UserRepoInterface {
 	public List<User> getAllUsers();
 	public User getUserByEmail(String email);
 	public boolean updateUsername(User user);
+	public void updateVerificationStatus(String userEmail);
 	//public void addUserPost(User user, Post post);
 	
 }

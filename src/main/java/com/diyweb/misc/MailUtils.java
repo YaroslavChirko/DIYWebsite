@@ -29,7 +29,7 @@ public class MailUtils {
 	//private static String rootPath = Thread.currentThread().getContextClassLoader().getResource("mail/").getPath();
 	private static String propertyPath = Thread.currentThread().getContextClassLoader().getResource("mail/").getPath();
 	
-	/*@Resource(name = "mail/diyWebSession")
+	/*@Resource(name = "java:app/mail/diyWebSession")
 	private static Session session;*/
 	
 	/**
@@ -54,14 +54,14 @@ public class MailUtils {
 		
 		while((line = messageTextStream.readLine()) != null ) {
 			messageTextBuilder.append(line);
-			messageTextBuilder.append("<br/>");
+			messageTextBuilder.append("\n");
 		}
 		
 		String messageTextStr = messageTextBuilder.toString();
-		messageTextStr.replaceAll("\\[URL\\]", hostUrl);
-		messageTextStr.replaceAll("\\[Name\\]", toVerify.getName());
-		messageTextStr.replaceAll("\\[UserIdentifier\\]", toVerify.getUserIdentifier().toString());
-		messageTextStr.replaceAll("\\[UserToken\\]", toVerify.getUserToken().getToken().toString());
+		messageTextStr = messageTextStr.replaceAll("\\[URL\\]", hostUrl);
+		messageTextStr = messageTextStr.replaceAll("\\[Name\\]", toVerify.getName());
+		messageTextStr = messageTextStr.replaceAll("\\[UserEmail\\]", toVerify.getEmail());
+		messageTextStr = messageTextStr.replaceAll("\\[UserToken\\]", toVerify.getUserToken().getToken().toString());
 		
 		return composeMessage(session, sender, reciever, toVerify, messageTextStr, subjectText);
 	}
@@ -103,16 +103,6 @@ public class MailUtils {
 	public static void sendMessage(String reciever, User toVerify, String hostUrl, String propertyName, String userPropertyName) throws FileNotFoundException, IOException, MessagingException {
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(propertyPath+"/"+propertyName));
-		properties.put("mail.transport.protocol", "smtp");
-		properties.put("mail.smtp.host", "smtp.ukr.net");
-		properties.put("mail.smtp.auth", "true");
-		properties.put("mail.smtp.port", "465");
-		properties.put("mail.smtp.socketFactory.class", 
-                 "javax.net.ssl.SSLSocketFactory");
-		
-		
-		properties.put("mail.smtp.ssl.enable", "true");
-		properties.put("mail.smtp.starttls.required", "true" );
 		
 		Properties userProps = new Properties();
 		userProps.load(new FileInputStream(propertyPath+"/"+userPropertyName));
@@ -124,9 +114,13 @@ public class MailUtils {
 			}
 		});
 		
+		System.out.println("session is null: "+(session == null));
+		
+		//session.getStore().connect(userProps.getProperty("user.login"), userProps.getProperty("user.pass"));
 		
 		MimeMessage message = composeMessage(session, userProps.getProperty("user.login"), reciever, toVerify, hostUrl);
 		
+		//session.getTransport("smtp").send(message);
 		Transport.send(message);
 	}
 }
