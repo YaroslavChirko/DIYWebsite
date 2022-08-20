@@ -11,16 +11,32 @@
     	<nav class="navbar bg-dark navbar-expand-sm fixed-top">
     		<div class="container">
     			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#Navbar">
-    				<span class="navbar-toggler-icon"></span>
+    				<span class="navbar-toggler-icon text-light"></span>
     			</button>
-    			<a class="navbar-brand mr-auto" href="#">M</a>
+    			<c:url var="index_url" value="/"/>
+    			<a class="navbar-brand mr-auto text-light" href="${index_url}">Home</a>
     			<div class="collapse navbar-collapse" id="Navbar">
     				<ul class="navbar-nav mr-auto">
     					<c:forEach items="${typesBean}" var="type">
-    						<li class="nav-item"><a class="nav-link text-light" href="./${type}">${type}</a></li>
+    						<c:url var="type_url" value="/${type}"/>
+    						<li class="nav-item"><a class="nav-link text-light" href="${type_url}">${type}</a></li>
     					</c:forEach>
-    					<li class="nav-item"><a class="nav-link text-light" href="./ABOUT_US">About Us</a></li>
-    					<li class="nav-item"><a class="nav-link text-light" href="./Search"><i class="fa fa-search" aria-hidden="true">Search</i></a></li>
+    					<c:url var="ABOUT_US" value="/about_us"/>
+    					<li class="nav-item"><a class="nav-link text-light" href="${ABOUT_US}">About Us</a></li>
+    					<c:url var="search_url" value="/search"/>
+    					<li class="nav-item"><a class="nav-link text-light" href="${search_url}"><i class="fa fa-search" aria-hidden="true">Search</i></a></li>
+    					<c:if test="${sessionScope.userIdentifier eq null && sessionScope.userEmail eq null}">
+    						<c:url var="log_url" value="/login"/>
+    						<li class="nav-item"><a class="nav-link text-light" href="${log_url}">Log in</a></li>
+    						<c:url var="reg_url" value="/register" />
+    						<li class="nav-item"><a class="nav-link text-light" href="${reg_url}">Register</a></li>
+    					</c:if>
+    					<c:if test="${sessionScope.userIdentifier ne null && sessionScope.userEmail ne null}">
+    						<c:url var="usr_url" value="/user/${sessionScope.userIdentifier}"/>
+    						<li class="nav-item"><a class="nav-link text-light" href="${usr_url}"><i class="fa fa-user">User</i></a></li>
+    						<c:url var="logout_url" value="/logout"></c:url>
+    						<li class="nav-item"><a class="nav-link text-light" href="${logout_url}"><i class="fa fa-door-open">Logout</i></a></li>
+    					</c:if>
     				</ul>
     			</div>
     		</div>
@@ -31,7 +47,7 @@
         		<div class="col-12">
 	                <a class="text-dark" href="./${type}"><h2>${type}</h2></a>
 	            </div>
-        		<div class="row row-content align-items-center carousel slide" id="${type}PostsCarousel" data-ride="carousel">
+	            <div class="row row-content align-items-center carousel slide" id="${type}PostsCarousel" data-ride="carousel">
 	                
 	                <div class="carousel-inner">
 		                <c:forEach items="${posts[type]}" var="post" varStatus="status">

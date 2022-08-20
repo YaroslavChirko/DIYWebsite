@@ -56,7 +56,6 @@ public class UserRepositoryImpl implements UserRepoInterface, Serializable {
 				entityManager.persist(user);
 			transaction.commit();
 		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

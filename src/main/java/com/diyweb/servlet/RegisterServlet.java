@@ -31,7 +31,6 @@ public class RegisterServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		Enumeration<String> attr = req.getParameterNames();
 		User user = new User((String)req.getParameter("name"), 
 				(String)req.getParameter("email"), 
 				(String)req.getParameter("pass"));
@@ -45,10 +44,8 @@ public class RegisterServlet extends HttpServlet {
 				System.out.println("Register message sending failed due to: "+e.getMessage());
 				e.printStackTrace();
 			}
-			//TODO: save token and mail
 		}
-		RequestDispatcher dispatcher = req.getRequestDispatcher("/");
-		dispatcher.include(req, resp);
+		resp.sendRedirect("./");
 		
 	}
 	

@@ -28,14 +28,16 @@ public class VerifyServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		
+		//parameters are being extracted from the annotations
 		Map<String, String> pathParams = UrlPathParameterExtractor.processPathParameters(this.getClass(), req.getPathInfo());
 		if(!pathParams.isEmpty() && pathParams.get("pathEmail")!=null) {
 			User user = userRepo.getUserByEmail(pathParams.get("pathEmail"));
 			if(user != null) {
 				UserEmailToken token = user.getUserToken();
 				if(token != null) {
-					System.out.println("tokens are equal: "+token.getToken().toString().equals(pathParams.getOrDefault("pathIdentifier", "")));
 					if(token.getToken().toString().equals(pathParams.getOrDefault("pathIdentifier", ""))) {
+						//this sets isVerified to true and removes the token
+						//TODO: add logic to delete token if it has expired
 						userRepo.updateVerificationStatus(user.getEmail());
 
 						req.getSession().setAttribute("userIdentifier", user.getUserIdentifier());

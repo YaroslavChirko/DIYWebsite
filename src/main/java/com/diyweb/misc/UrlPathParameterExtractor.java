@@ -34,7 +34,6 @@ public class UrlPathParameterExtractor {
 		
 		int length = Math.min(pathParts.length, urlParts.length);
 		for(int i = 0; i<length; i++) result.put(pathParts[i].substring(1, pathParts[i].length()-1), urlParts[i]);
-		System.out.println("result "+result);
 		return result;
 	}
 }

@@ -31,7 +31,7 @@ public class User implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 	@NotNull
     private String name;
     @NotNull
@@ -151,9 +151,16 @@ public class User implements Serializable{
 		return "USER: { name: "+name+", e-mail: "+email+", is Verified: "+isVerified+" };";
 	}
     
-    public boolean comparePass(String retrievedEncryptedPass) {
-    	StrongPasswordEncryptor passwordCompare = new StrongPasswordEncryptor();
-    	return passwordCompare.checkPassword(this.pass, retrievedEncryptedPass);
+	/**
+	 * 
+	 * @param retrievedPass
+	 * @return true if passed password is the same as the persisted one, false otherwise
+	 * 
+	 *  This method is used to compare passwords during login
+	 */
+    public boolean comparePass(String retrievedPass) {
+    	StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
+    	return passwordEncryptor.checkPassword(retrievedPass, this.pass);
     }
     
 }
