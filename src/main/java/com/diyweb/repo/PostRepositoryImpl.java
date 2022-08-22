@@ -90,6 +90,20 @@ public class PostRepositoryImpl implements PostRepoInterface, Serializable {
 	}
 	
 	@Override
+	public List<Post> getNumberOfPostsWithOffsetForCategory(Cathegory category, int offset, int numberOfResults){
+		String queryStr = "Select p from Post p Where p.cathegory = :category Order by p.postedAt Desc";
+		Query query = entityManager.createQuery(queryStr);
+		query.setParameter("category", category);
+		
+		query.setFirstResult(offset);
+		query.setMaxResults(numberOfResults);
+		
+		List<Post> posts = (List<Post>) query.getResultStream().collect(Collectors.<Post, List<Post>>toCollection(ArrayList<Post>::new));
+		posts = posts ==null ? new ArrayList<Post>(): posts;
+		return posts;
+	}
+	
+	@Override
 	public Map<Cathegory, List<Post>> getAllPostsByCathegories() {
 		Map<Cathegory, List<Post>> posts = new HashMap<>();
 		for(Cathegory type: Cathegory.values()) {

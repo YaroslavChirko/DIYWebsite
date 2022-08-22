@@ -12,6 +12,7 @@ public interface PostRepoInterface {
 	public List<Post> getAllPosts();
 	public List<Post> getPostsForCathegory(Cathegory cathegory);
 	public List<Post> getLastTenPostsForCathegory(Cathegory cathegory);
+	public List<Post> getNumberOfPostsWithOffsetForCategory(Cathegory category, int offset, int numberOfResults);
 	public Map<Cathegory, List<Post>> getAllPostsByCathegories();
 	public Map<Cathegory, List<Post>> getLastTenPostsByCathegories();
 	public List<Post> getPostsByUser(User user);

@@ -25,7 +25,7 @@
     						</button>
     						<div class="dropdown-menu" aria-labelledby="dropdownButton">
     							<c:forEach items="${typesBean}" var="type">
-		    						<c:url var="type_url" value="/posts/${type}"/>
+		    						<c:url var="type_url" value="/${type}"/>
 		    						<a class="nav-link text-light dropdown-item" href="${type_url}">${type}</a>
 		    					</c:forEach>
     						</div>
@@ -53,55 +53,20 @@
     	</nav>
     	
         <div class="container mt-5">
-        	<c:forEach items="${typesBean}" var="type">
-        		<div class="col-12">
-        			<c:url var="type_url" value="/posts/${type}"/>
-	                <a class="text-dark" href="${type_url}"><h2>${type}</h2></a>
-	            </div>
-	            <div class="row row-content align-items-center carousel slide" id="${type}PostsCarousel" data-ride="carousel">
-	                
-	                <div class="carousel-inner">
-		                <c:forEach items="${posts[type]}" var="post" varStatus="status">
-		              		<c:choose>
-		              			<c:when test="${status.first}">
-		              				<div class="carousel-item active">
-				                		<div class="card d-block w-100">
-					                			<h4 class="card-header bg-light">${post.title}</h4>
-					                       		<div class="card-body">
-					                       			<p>${post.body}</p>
-					                       			<h6>${post.author.name}: ${post.author.email}</h6>
-					                       		</div>
-					                	</div>
-				                	</div>	
-		              			</c:when>
-		              			<c:otherwise>
-		              				<div class="carousel-item">
-				                		<div class="card d-block w-100">
-					                			<h4 class="card-header bg-light">${post.title}</h4>
-					                       		<div class="card-body">
-					                       			<p>${post.body}</p>
-					                       			<h6>${post.author.name}: ${post.author.email}</h6>
-					                       		</div>
-					                	</div>
-				                	</div>	
-		              			</c:otherwise>
-		              		</c:choose>
-		              		
-		              		
-		                </c:forEach>
-	                </div>
-	               	<a class="carousel-control-prev bg-primary" href="#${type}PostsCarousel" role="button" data-slide="prev">
-					    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-					    <span class="sr-only"></span>
-					</a>
-	                <a class="carousel-control-next bg-dark" href="#${type}PostsCarousel" role="button" data-slide="next">
-					    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-					    <span class="sr-only"></span>
-					</a>
-	            </div>
-	            <br/>
-	            <br/>
-        	</c:forEach>
+        	<button class="mr-5 col-3 btn btn-primary" type="button" onclick="location.href = 'add-post/${currentCategory}'">Add Post</button>
+        	<c:forEach items="${posts}" var="post">
+        		<div class="col-12 col-md-4 col-lg-3">
+        			<div class="card d-block w-100">
+		    			<h4 class="card-header bg-light">${post.title}</h4>
+		           		<div class="card-body">
+		           			<img alt="" src="${post.pictureUrls.get(0)}" height="300" width="300" />
+		           			<p>${post.body}</p>
+		           			<h6>${post.author.name}: ${post.author.email}</h6>
+		           		</div>
+		          	</div>
+        		</div>
+        		
+        	</c:forEach>	
         </div>
         <!-- JavaScript Bundle with Popper -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
