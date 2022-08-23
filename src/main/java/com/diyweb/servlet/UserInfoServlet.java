@@ -34,6 +34,7 @@ public class UserInfoServlet extends HttpServlet {
 			dispatcher.forward(req, resp);
 		}
 		resp.sendRedirect("./");
+		return;
 	}
 
 	@Override

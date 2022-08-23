@@ -46,7 +46,7 @@ public class RegisterServlet extends HttpServlet {
 			}
 		}
 		resp.sendRedirect("./");
-		
+		return;
 	}
 	
 	

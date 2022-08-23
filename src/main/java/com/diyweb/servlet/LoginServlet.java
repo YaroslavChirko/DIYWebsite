@@ -34,12 +34,15 @@ public class LoginServlet extends HttpServlet {
 		
 		User persistedUser = userRepository.getUserByEmail(email);
 		if(persistedUser.comparePass(pass)) {
-			session.setAttribute("userIdentitier", persistedUser.getUserIdentifier());
+			session.setAttribute("userIdentifier", persistedUser.getUserIdentifier());
 			session.setAttribute("userEmail", persistedUser.getEmail());
 		}else {
-			System.out.println("No such user found, check pass and email");
+			System.out.println("No such user found, check pass and email");//TODO: put as an error
+			resp.sendError(403, "User was not found, check credentials.");
+			return;
 		}
 		resp.sendRedirect("./");
+		return;
 	}
 	
 }

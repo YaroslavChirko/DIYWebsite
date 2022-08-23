@@ -44,10 +44,12 @@ public class PostsServlet extends HttpServlet {
 			category = Cathegory.valueOf(categoryStr);
 		}else {
 			resp.sendError(404, "No category found for: " + categoryStr);
+			return;
 		}
 		
 		if(category == null) {
 			resp.sendError(404, "No category found for: " + categoryStr);
+			return;
 		}
 		//retrieve posts for this category, only first few to do the pagination
 		List<Post> posts = postRepo.getNumberOfPostsWithOffsetForCategory(category, 0, 100);
