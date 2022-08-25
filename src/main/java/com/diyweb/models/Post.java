@@ -148,7 +148,7 @@ public class Post {
 	@Override
 	public String toString() {
 		return "POST: { Title: "+title+", Author\'s name: "+author.getName()+",\nCropped body: "
-				+body.substring(0, 100)+"... , Posted at: "+postedAt+" };";
+				+body.substring(0, Math.min(100, body.length()))+"... , Posted at: "+postedAt+" };";
 	}
     
     

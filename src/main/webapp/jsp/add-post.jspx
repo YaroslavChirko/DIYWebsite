@@ -55,7 +55,7 @@
         <div class="container mt-5">
         	<jsp:useBean id="postRegister" class="com.diyweb.models.Post" scope="page"/>
         	<jsp:setProperty property="*" name="postRegister"/>
-        	<form class="text-center" method="post">
+        	<form class="text-center" method="post" enctype="multipart/form-data">
         		<div class="form-group row">
         			<label for="title" class="col-md-2 col form-label">Title: </label>
         			<div class="col-md-10">

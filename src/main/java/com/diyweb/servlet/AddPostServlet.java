@@ -1,6 +1,11 @@
 package com.diyweb.servlet;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -91,8 +96,8 @@ public class AddPostServlet extends HttpServlet {
 		}
 		
 		Cathegory category = Cathegory.valueOf(pathCategory);
-		if(category != null) {
-			resp.sendError(400, "Category");
+		if(category == null) {
+			resp.sendError(400, "Category not found in a list");
 			return;
 		}
 		
@@ -105,7 +110,7 @@ public class AddPostServlet extends HttpServlet {
 		}
 		
 		User currentUser = userRepo.getUserByEmail(userEmail);
-		if(currentUser == null || currentUser.isVerified()) {
+		if(currentUser == null || !currentUser.isVerified()) {
 			resp.sendError(401, "User not found, try with another account");
 			return;
 		}
@@ -115,10 +120,32 @@ public class AddPostServlet extends HttpServlet {
 		List<String> pictureUrls = new ArrayList<>();
 		Post currentPost = new Post(currentUser, title, category, body, pictureUrls);
 		//save images to some folder and then add paths to them into pictureUrls array
-		String pathToPictures = Thread.currentThread().getContextClassLoader().getResource("").getPath()+"/"+userIdentifier+"/"+currentPost.hashCode();
+		String pathToPictures = Thread.currentThread().getContextClassLoader().getResource("").getPath()+"/posts/"+userIdentifier+"/"+currentPost.hashCode();
 		
-		for() {
-			
+		
+		for(Part part: req.getParts()) {
+			if(part !=null && part.getSubmittedFileName()!=null && 
+					(part.getSubmittedFileName().matches(".+\\.png$")
+					|| part.getSubmittedFileName().matches(".+\\.gif$")
+					|| part.getSubmittedFileName().matches(".+\\.jpg$")
+					|| part.getSubmittedFileName().matches(".+\\.jpeg$"))) {
+				if(!Files.exists(Paths.get(pathToPictures))){
+					System.out.println("Directory "+pathToPictures+" wasn't found, creating");
+					Files.createDirectories(Paths.get(pathToPictures));
+				}
+				
+				java.nio.file.Path filePath = Paths.get(pathToPictures+"/"+part.getSubmittedFileName());
+				
+				if(!Files.exists(filePath)) {
+					System.out.println("File: "+filePath.toString()+" wasn't found, proceeding to create");
+					Files.createFile(filePath);
+				}
+				
+				InputStream pis = part.getInputStream();
+				OutputStream pos = new FileOutputStream(filePath.toFile());
+				pos.write(pis.readAllBytes());// for now all of the
+				
+			}
 		}
 		
 		postRepo.persist(currentPost);

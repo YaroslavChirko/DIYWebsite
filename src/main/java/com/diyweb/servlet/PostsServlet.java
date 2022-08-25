@@ -38,8 +38,6 @@ public class PostsServlet extends HttpServlet {
 		String categoryStr = UrlPathParameterExtractor.processPathParameters(getClass(), req.getPathInfo()).get("category");
 		//check if category exists, if not, sendError
 		Cathegory category = null;
-		System.out.println(req.getPathInfo());
-		System.out.println("Category is: "+categoryStr);
 		if(!(categoryStr == null)) {
 			category = Cathegory.valueOf(categoryStr);
 		}else {

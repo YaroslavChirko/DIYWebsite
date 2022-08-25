@@ -59,7 +59,9 @@
         			<div class="card d-block w-100">
 		    			<h4 class="card-header bg-light">${post.title}</h4>
 		           		<div class="card-body">
-		           			<img alt="" src="${post.pictureUrls.get(0)}" height="300" width="300" />
+		           			<c:if test="${post.pictureUrls.size()} gt 0 ">
+		           				<img alt="" src="${post.pictureUrls.get(0)}" height="300" width="300" />
+		           			</c:if>
 		           			<p>${post.body}</p>
 		           			<h6>${post.author.name}: ${post.author.email}</h6>
 		           		</div>
