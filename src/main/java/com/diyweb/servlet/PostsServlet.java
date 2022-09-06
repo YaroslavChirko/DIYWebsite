@@ -1,7 +1,9 @@
 package com.diyweb.servlet;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 
 import com.diyweb.misc.UrlPathParameterExtractor;
 import com.diyweb.models.Cathegory;
@@ -28,6 +30,7 @@ import jakarta.ws.rs.Path;
 @WebServlet(urlPatterns="/posts/*")
 @Path("/{category}")
 public class PostsServlet extends HttpServlet {
+	private String imgPropertiesStr = Thread.currentThread().getContextClassLoader().getResource("images/images.properties").getPath();
 	@Inject
 	PostRepoInterface postRepo;
 	
@@ -49,13 +52,15 @@ public class PostsServlet extends HttpServlet {
 			resp.sendError(404, "No category found for: " + categoryStr);
 			return;
 		}
+		Properties imgProperties = new Properties();
+		imgProperties.load(new FileInputStream(imgPropertiesStr));
 		//retrieve posts for this category, only first few to do the pagination
 		List<Post> posts = postRepo.getNumberOfPostsWithOffsetForCategory(category, 0, 100);
 		//put bean to view
-		System.out.println("Posts: "+posts);
 		req.setAttribute("posts", posts);
 		req.setAttribute("typesBean", Cathegory.values());
 		req.setAttribute("currentCategory", category);
+		req.setAttribute("host", imgProperties.getOrDefault("images.save.host", "http://localhost:8080"));
 		//dispatch
 		RequestDispatcher dispatcher = req.getRequestDispatcher("/jsp/posts-view.jspx");
 		dispatcher.forward(req, resp);

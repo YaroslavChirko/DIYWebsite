@@ -46,10 +46,10 @@ public class User implements Serializable{
     private String profilePictureUrl;
     
     private boolean isVerified;
-    //TODO: FK
+    
     @OneToMany
     private List<Post> posts;
-    //TODO: FK
+   
     @OneToMany
     private List<Comment> comments;
     

@@ -71,16 +71,19 @@
         		<div class="form-group row">
         			<label for="images" class="col-md-2 col form-label">Images: </label>
         			<div class="col-md-10 form-group custom-file">
-        				<input type="file" name="images" accept="image/png, image/gif, image/jpeg, image/jpg" multiple="multiple" class="form-control-file form-control-sm custom-file-input"/>
+        				<input type="file" name="images" id="images" accept="image/png, image/gif, image/jpeg, image/jpg" multiple="multiple" class="form-control-file form-control-sm custom-file-input"/>
         			</div>
         		</div>
-        		<div class="form-group row">
-        			
-        			<div class="col-md-12">
-        				<input class="btn btn-primary" type="submit" name="post_sub" id="post_sub" value="Post"/>
-        			</div>
-        		</div>
+        		
+        		<button class="btn btn-primary">Add Post</button>
         	</form>
+        	<div id="images_view" class="row row-content">
+        	</div>
         </div>
+        
+	    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">1</script>
+	    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">1</script>
+	    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">1</script>
+	    <script src="/DIYWebsite/static/js/picture-upload-script.js" type="text/javascript" >1</script>
      </body>
 </html>

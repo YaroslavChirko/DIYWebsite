@@ -1,5 +1,6 @@
 package com.diyweb.servlet;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,9 +9,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.UUID;
 
+import com.diyweb.misc.HtmlTextEscapingUtils;
+import com.diyweb.misc.ImageSaver;
 import com.diyweb.misc.UrlPathParameterExtractor;
+import com.diyweb.misc.UserAuthenticationChecker;
 import com.diyweb.models.Cathegory;
 import com.diyweb.models.Post;
 import com.diyweb.models.User;
@@ -36,32 +43,24 @@ import jakarta.ws.rs.Path;
 		maxRequestSize = 1024*1024*100
 )
 public class AddPostServlet extends HttpServlet {
-
+	
 	@Inject
 	UserRepoInterface userRepo;
 	@Inject
 	PostRepoInterface postRepo;
+	@Inject
+	ImageSaver imageSaver;
+	@Inject
+	UserAuthenticationChecker userAuthChecker;
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		//check user credentials
-		String userEmail = (String)req.getSession().getAttribute("userEmail");
-		UUID userIdentifier = (UUID)req.getSession().getAttribute("userIdentifier");
-		
-		if(userEmail == null || userIdentifier ==null) {
-			resp.sendError(404, "User was not authenticated properly");
-			return;
-		}
-		//retrieve user
-		User persistedUser = userRepo.getUserByEmail(userEmail);
-		if(persistedUser == null) {
-			resp.sendError(401, "No registered user found for email: "+userEmail);
-			return;
-		}
-		
-		//check verification
-		if(!persistedUser.isVerified() && !persistedUser.getUserIdentifier().equals(userIdentifier)) {
-			resp.sendError(401, "User email was not verified, please follow the link in the email message to verify.");
+		Map<Integer, String> error = userAuthChecker.checkUserCredentialsFromSession(req.getSession());
+		if(!error.isEmpty()) {
+			//since we don't now whichever error was added we get the entry
+			Entry<Integer,String> errorEntry = error.entrySet().iterator().next();
+			resp.sendError(errorEntry.getKey(), errorEntry.getValue());
 			return;
 		}
 		
@@ -85,7 +84,7 @@ public class AddPostServlet extends HttpServlet {
 			return;
 		}
 		
-		if(body == null || title.trim().equals("")) {
+		if(body == null || body.trim().equals("")) {
 			resp.sendError(400, "Body was not provided or was empty");
 			return;
 		}
@@ -104,48 +103,31 @@ public class AddPostServlet extends HttpServlet {
 		//get user email, check it and retrieve user
 		String userEmail = (String)req.getSession().getAttribute("userEmail");
 		UUID  userIdentifier = (UUID)req.getSession().getAttribute("userIdentifier");
-		if(userEmail == null || userIdentifier == null || userEmail.equals("")) {
-			resp.sendError(400, "User credentials are either null or empty");
+		Map<Integer, String> error = userAuthChecker.checkPassedUserCredentials(userEmail, userIdentifier);
+		if(!error.isEmpty()) {
+			resp.sendError(400, error.get(400));
 			return;
 		}
 		
 		User currentUser = userRepo.getUserByEmail(userEmail);
-		if(currentUser == null || !currentUser.isVerified()) {
-			resp.sendError(401, "User not found, try with another account");
+		//check user verification and 
+		error = userAuthChecker.checkUserAuthentication(currentUser, userIdentifier);
+		if(!error.isEmpty()) {
+			resp.sendError(401, error.get(401));
 			return;
 		}
 		
 		
 		
 		List<String> pictureUrls = new ArrayList<>();
+		title = HtmlTextEscapingUtils.escapeHtmlText(title);
+		body = HtmlTextEscapingUtils.escapeHtmlText(body);
+		
 		Post currentPost = new Post(currentUser, title, category, body, pictureUrls);
-		//save images to some folder and then add paths to them into pictureUrls array
-		String pathToPictures = Thread.currentThread().getContextClassLoader().getResource("").getPath()+"/posts/"+userIdentifier+"/"+currentPost.hashCode();
-		
-		
-		for(Part part: req.getParts()) {
-			if(part !=null && part.getSubmittedFileName()!=null && 
-					(part.getSubmittedFileName().matches(".+\\.png$")
-					|| part.getSubmittedFileName().matches(".+\\.gif$")
-					|| part.getSubmittedFileName().matches(".+\\.jpg$")
-					|| part.getSubmittedFileName().matches(".+\\.jpeg$"))) {
-				if(!Files.exists(Paths.get(pathToPictures))){
-					System.out.println("Directory "+pathToPictures+" wasn't found, creating");
-					Files.createDirectories(Paths.get(pathToPictures));
-				}
-				
-				java.nio.file.Path filePath = Paths.get(pathToPictures+"/"+part.getSubmittedFileName());
-				
-				if(!Files.exists(filePath)) {
-					System.out.println("File: "+filePath.toString()+" wasn't found, proceeding to create");
-					Files.createFile(filePath);
-				}
-				
-				InputStream pis = part.getInputStream();
-				OutputStream pos = new FileOutputStream(filePath.toFile());
-				pos.write(pis.readAllBytes());// for now all of the
-				
-			}
+		//persist pictures and get urls
+		pictureUrls = imageSaver.saveToLocation(userIdentifier, currentPost.hashCode(), req.getParts());
+		if(pictureUrls != null && !pictureUrls.isEmpty()) {
+			currentPost.setPictureUrls(pictureUrls);
 		}
 		
 		postRepo.persist(currentPost);
