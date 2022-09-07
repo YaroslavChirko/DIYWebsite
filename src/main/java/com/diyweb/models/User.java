@@ -53,7 +53,7 @@ public class User implements Serializable{
     @OneToMany
     private List<Comment> comments;
     
-    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private UserEmailToken userToken;
     private UUID userIdentifier;
     

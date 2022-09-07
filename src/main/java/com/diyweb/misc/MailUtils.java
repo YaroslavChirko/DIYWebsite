@@ -26,12 +26,12 @@ import jakarta.mail.internet.MimeMessage.RecipientType;
  *
  */
 public class MailUtils {
-	//private static String rootPath = Thread.currentThread().getContextClassLoader().getResource("mail/").getPath();
 	private static String propertyPath = Thread.currentThread().getContextClassLoader().getResource("mail/").getPath();
 	
 	/*@Resource(name = "java:app/mail/diyWebSession")
 	private static Session session;*/
-	
+	private static String[] subjectTextArr = {"E-mail address verification", "Password reset"};
+	private static String[] messageTextFileNames = {"message_text.txt", "password_reset_text.txt"};
 	/**
 	 * @param session
 	 * @param sender
@@ -44,9 +44,9 @@ public class MailUtils {
 	 * 
 	 * 
 	 */
-	private static MimeMessage composeMessage(Session session, String sender, String reciever, User toVerify, String hostUrl) throws MessagingException, IOException {
-		String subjectText = "E-mail address verification";
-		String messageTextFileName = "message_text.txt";
+	private static MimeMessage composeMessage(Session session, String sender, String reciever, User toVerify, String hostUrl, EmailType type) throws MessagingException, IOException {
+		String subjectText = subjectTextArr[type.id];
+		String messageTextFileName = messageTextFileNames[type.id];
 		StringBuilder messageTextBuilder = new StringBuilder();
 		BufferedReader messageTextStream = new BufferedReader(new FileReader(propertyPath+"/"+messageTextFileName));
 		
@@ -100,7 +100,7 @@ public class MailUtils {
 	 * @throws FileNotFoundException 
 	 * @throws MessagingException 
 	 */
-	public static void sendMessage(String reciever, User toVerify, String hostUrl, String propertyName, String userPropertyName) throws FileNotFoundException, IOException, MessagingException {
+	public static void sendMessage(String reciever, User toVerify, String hostUrl, String propertyName, String userPropertyName, EmailType type) throws FileNotFoundException, IOException, MessagingException {
 		Properties properties = new Properties();
 		properties.load(new FileInputStream(propertyPath+"/"+propertyName));
 		
@@ -118,9 +118,21 @@ public class MailUtils {
 		
 		//session.getStore().connect(userProps.getProperty("user.login"), userProps.getProperty("user.pass"));
 		
-		MimeMessage message = composeMessage(session, userProps.getProperty("user.login"), reciever, toVerify, hostUrl);
+		MimeMessage message = composeMessage(session, userProps.getProperty("user.login"), reciever, toVerify, hostUrl, type);
 		
 		//session.getTransport("smtp").send(message);
 		Transport.send(message);
+	}
+	
+	
+	public enum EmailType{
+		
+		VERIFICATION(0),
+		PASSWORD_RESET(1);
+		
+		int id;
+		EmailType(int id){
+			this.id = id;
+		}
 	}
 }

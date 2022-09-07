@@ -36,10 +36,12 @@ import jakarta.transaction.UserTransaction;
 @ApplicationScoped
 public class PostRepositoryImpl implements PostRepoInterface, Serializable {
 
+	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -8999669614367529104L;
+	private static final long serialVersionUID = 1445738415022236250L;
+
 	@PersistenceContext(unitName = "diyWebUnit")
 	EntityManager entityManager;
 	

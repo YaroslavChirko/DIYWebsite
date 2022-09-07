@@ -39,7 +39,7 @@ public class RegisterServlet extends HttpServlet {
 			userRepository.persist(user);
 			User retrievedUser = userRepository.getUserByEmail(user.getEmail());
 			try {
-				MailUtils.sendMessage(retrievedUser.getEmail(), retrievedUser, "http://localhost:8080/DIYWebsite", "gmail.properties", "gmail_user.properties");
+				MailUtils.sendMessage(retrievedUser.getEmail(), retrievedUser, "http://localhost:8080/DIYWebsite", "gmail.properties", "gmail_user.properties", MailUtils.EmailType.VERIFICATION);
 			} catch (IOException | MessagingException e) {
 				System.out.println("Register message sending failed due to: "+e.getMessage());
 				e.printStackTrace();

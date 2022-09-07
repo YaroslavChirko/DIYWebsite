@@ -1,6 +1,6 @@
 <html version="3.0" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:c="http://java.sun.com/jsp/jstl/core">
     <head>
-        <title>${currentUser.name}</title>
+        <title>Log in</title>
         <jsp:directive.page contentType="text/html" pageEncoding="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         
@@ -13,7 +13,7 @@
     			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#Navbar">
     				<span class="navbar-toggler-icon text-light"></span>
     			</button>
-    			<a class="navbar-brand mr-auto text-light" href="../">Home</a>
+    			<a class="navbar-brand mr-auto text-light" href="./">Home</a>
     			<div class="collapse navbar-collapse" id="Navbar">
     				<ul class="navbar-nav mr-auto">
     					<li class="nav-item"><a class="nav-link text-light" href="./ABOUT_US">About Us</a></li>
@@ -28,33 +28,21 @@
         	<jsp:setProperty property="*" name="userLogin"/>
         	<form class="text-center" method="post">
         		<div class="form-group row">
-        			<label for="email" class="col-md-2 col form-label">Name: </label>
-        			<div class="col-md-10">
-        				<input type="name" id="name" name="name" placeholder="Name" value="${currentUser.name}" disabled="disabled"/>
-        			</div>
-        		</div>
-        		<div class="form-group row">
         			<label for="email" class="col-md-2 col form-label">Email: </label>
         			<div class="col-md-10">
-        				<input type="email" id="email" name="email" placeholder="Email" value="${currentUser.email}" disabled="disabled"/>
+        				<input type="email" id="email" name="email" placeholder="Email"/>
         			</div>
         		</div>
         		<div class="form-group row">
         			
         			<div class="col-md-12">
-        				<button name="update_sub" id="update_sub" class="btn btn-primary" hidden="true">Submit</button>
+        				<button name="register_sub" id="login_sub" class="btn btn-primary">Send Reset Link</button>
         			</div>
         		</div>
         	</form>
-        	<div class="row text-center">
-        		<button name="edit_btn" id="edit_btn" class="btn btn-primary mt-3 mb-3" onclick="makeEditable()">Edit</button>
-        		<button name="change_pass_btn" id="change_pass_btn" class="btn btn-secondary mt-3 mb-3" onclick="location.href = './user/passwordReset'">Change Password</button>
-        	</div>
-        	
         </div>
 	    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">1</script>
 	    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">1</script>
 	    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">1</script>
-	    <script src="/DIYWebsite/static/js/user-info-script.js" type="text/javascript">1</script>
      </body>
 </html>

@@ -91,7 +91,7 @@ public class PostViewServlet extends HttpServlet {
 		req.setAttribute("post", post);
 		req.setAttribute("typesBean",Cathegory.values());
 		req.setAttribute("host", imageProps.getOrDefault("images.save.host", "http://localhost:8080"));
-		System.out.println("Bruv");
+		
 		requestDispatcher.forward(req, resp);
 	}
 

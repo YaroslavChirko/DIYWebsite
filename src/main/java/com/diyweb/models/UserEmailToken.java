@@ -3,8 +3,10 @@ package com.diyweb.models;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -25,10 +27,11 @@ public class UserEmailToken {
 	private LocalDateTime createdAt;
 	
 	@OneToOne
+	@JoinColumn(name="owner_email", referencedColumnName="email")
 	private User owner;
 	
 	@Transient
-	private static int timeTillInvalidation = 20;//in minutes
+	public static int timeTillInvalidation = 20;//in minutes
 	
 	public UserEmailToken() {}
 	

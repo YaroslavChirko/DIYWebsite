@@ -34,10 +34,11 @@ import jakarta.transaction.UserTransaction;
 @ApplicationScoped
 public class UserRepositoryImpl implements UserRepoInterface, Serializable {
 	
+	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -5377217999793172892L;
+	private static final long serialVersionUID = -2143886811858815273L;
 	@PersistenceContext(unitName = "diyWebUnit")
 	private EntityManager entityManager;
 	private StrongPasswordEncryptor encryptor = new StrongPasswordEncryptor();
@@ -107,6 +108,38 @@ public class UserRepositoryImpl implements UserRepoInterface, Serializable {
 		
 	}
 	
+	@Override
+	public void updateUserToken(String userEmail, UserEmailToken token) {
+		User retrievedUser = getUserByEmail(userEmail);
+		if(retrievedUser == null) return;
+		if(retrievedUser.getUserToken() != null && retrievedUser.getUserToken().equals(token)) return;
+		retrievedUser.setUserToken(token);
+		try {
+			transaction.begin();
+				entityManager.merge(retrievedUser);
+			transaction.commit();
+		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void updateUserPass(String userEmail, String newPass) {
+		User retrievedUser = getUserByEmail(userEmail);
+		if(retrievedUser == null) return;
+		if(retrievedUser.comparePass(newPass)) return;
+		retrievedUser.setPass(encryptor.encryptPassword(newPass));
+		try {
+			transaction.begin();
+				entityManager.merge(retrievedUser);
+			transaction.commit();
+		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+
 	@PreDestroy
 	private void cleanup() {
 		entityManager.close();

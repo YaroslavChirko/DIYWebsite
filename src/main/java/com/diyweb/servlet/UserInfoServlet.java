@@ -30,7 +30,9 @@ public class UserInfoServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String email = (String)req.getSession().getAttribute("userEmail");
-		String identifierStr = req.getSession().getAttribute("userIdentifier").toString();
+		Object identifierObj = req.getSession().getAttribute("userIdentifier");
+		String identifierStr = identifierObj == null ?"" :identifierObj.toString();
+		identifierObj = null;
 		String pathIdStr = UrlPathParameterExtractor.processPathParameters(getClass(), req.getPathInfo()).getOrDefault("userIdentifier", "");
 		if(email != null && !email.equals("") && identifierStr != null && identifierStr.equals(pathIdStr)) {
 			User user = userRepository.getUserByEmail(email);
