@@ -36,7 +36,7 @@
         		<div class="form-group row">
         			<label for="pass" class="col-md-2 col form-label">Password: </label>
         			<div class="col-md-10">
-        				<input type="text" id="pass" name="pass" placeholder="Password"/>
+        				<input type="password" id="pass" name="pass" placeholder="Password"/><button type="button" onclick="togglePass()">1</button>
         			</div>
         		</div>
         		<div class="form-group row">
@@ -47,11 +47,12 @@
         		</div>
         	</form>
         	<div class="row text-center">
-        		<button name="change_pass_btn" id="change_pass_btn" class="btn btn-secondary mt-3 mb-3" onclick="location.href = './user/passwordReset'">Change Password</button>
+        		<button name="change_pass_btn" id="change_pass_btn" class="btn btn-secondary mt-3 mb-3" onclick="location.href = './passwordReset'">Change Password</button>
         	</div>
         </div>
 	    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">1</script>
 	    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">1</script>
 	    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">1</script>
+	    <script src="/DIYWebsite/static/js/password-toggle-script.js" type="text/javascript">1</script>
      </body>
 </html>

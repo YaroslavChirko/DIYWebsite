@@ -58,7 +58,7 @@ public class VerifyServlet extends HttpServlet {
 		user.setUserToken(null);
 		userRepo.updateUserToken(user.getEmail(), user.getUserToken());
 					
-		resp.sendRedirect("/");//use root endpoint
+		resp.sendRedirect("/"+req.getLocalName());//TODO:use root endpoint
 		return;
 	}
 	
