@@ -2,6 +2,7 @@
 package com.diyweb.models;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -56,7 +57,7 @@ public class Post {
     	this.cathegory = cathegory;
     	this.body = body;
     	this.pictureUrls = pictureUrls;
-    	this.postedAt = LocalDateTime.now();
+    	this.postedAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
     
 	public int getId() {

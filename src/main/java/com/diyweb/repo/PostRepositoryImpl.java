@@ -139,28 +139,21 @@ public class PostRepositoryImpl implements PostRepoInterface, Serializable {
 		return entityManager.find(Post.class, id);
 	}
 
+	/**
+	 * Only body and pictures should be changeable since title is used to persist images<br/>
+	 * in future users should be able to find post by title therefore changing it would disable this function
+	 */
 	@Override
 	public boolean updatePost(Post post) {
 		Post current = getPostById(post.getId());
 		
-		boolean titleChanged = false;
 		boolean bodyChanged = false;
-		boolean cathegoryChanged = false;
 		boolean picturesChanged = false;
 		
-		if(!(current.getTitle().equals(post.getTitle()))) {
-			current.setTitle(post.getTitle());
-			titleChanged = true;
-		}
 		
 		if(!(current.getBody().equals(post.getBody()))) {
 			current.setBody(post.getBody());
 			bodyChanged = true;
-		}
-		
-		if(!(current.getCathegory().equals(post.getCathegory()))) {
-			current.setCathegory(post.getCathegory());
-			cathegoryChanged = true;
 		}
 		
 		if(!(current.getPictureUrls().equals(post.getPictureUrls()))) {
@@ -180,7 +173,7 @@ public class PostRepositoryImpl implements PostRepoInterface, Serializable {
 		
 		
 		
-		return titleChanged || bodyChanged || cathegoryChanged || picturesChanged;
+		return bodyChanged || picturesChanged;
 	}
 	
 	@PreDestroy

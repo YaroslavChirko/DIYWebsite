@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +106,7 @@ public class AddPostServlet extends HttpServlet {
 		UUID  userIdentifier = (UUID)req.getSession().getAttribute("userIdentifier");
 		Map<Integer, String> error = userAuthChecker.checkPassedUserCredentials(userEmail, userIdentifier);
 		if(!error.isEmpty()) {
-			resp.sendError(400, error.get(400));
+			resp.sendError(404, error.get(404));
 			return;
 		}
 		
@@ -125,7 +126,7 @@ public class AddPostServlet extends HttpServlet {
 		
 		Post currentPost = new Post(currentUser, title, category, body, pictureUrls);
 		//persist pictures and get urls
-		pictureUrls = imageSaver.saveToLocation(userIdentifier, currentPost.hashCode(), req.getParts());
+		pictureUrls = imageSaver.saveToLocation(userEmail, currentPost.getPostedAt().truncatedTo(ChronoUnit.SECONDS), currentPost.getTitle().hashCode(), req.getParts());
 		if(pictureUrls != null && !pictureUrls.isEmpty()) {
 			currentPost.setPictureUrls(pictureUrls);
 		}
