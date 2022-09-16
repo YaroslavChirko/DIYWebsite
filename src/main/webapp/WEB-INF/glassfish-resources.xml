@@ -40,40 +40,4 @@
     <property name="mail.smtp.password" value="M4zKr7dI8VNEhSov" /> -->
   </mail-resource>
   
-  <admin-object-resource enabled="true" jndi-name="jms/eletronicsQueue" object-type="user" 
-                         res-adapter="jmsra" res-type="jakarta.jms.Queue">
-      <description>Queue for electronics topic</description>
-    <property name="Name" value="ElectronicsQueue"/>
-  </admin-object-resource>
-  <admin-object-resource enabled="true" jndi-name="jms/papercraftQueue" object-type="user" 
-                         res-adapter="jmsra" res-type="jakarta.jms.Queue">
-      <description>Queue for papercraft topic</description>
-    <property name="Name" value="PapaercraftQueue"/>
-  </admin-object-resource>
-  <admin-object-resource enabled="true" jndi-name="jms/textileQueue" object-type="user" 
-                         res-adapter="jmsra" res-type="jakarta.jms.Queue">
-      <description>Queue for textile topic</description>
-    <property name="Name" value="TextileQueue"/>
-  </admin-object-resource>
-  <admin-object-resource enabled="true" jndi-name="jms/woodworkQueue" object-type="user" 
-                         res-adapter="jmsra" res-type="jakarta.jms.Queue">
-      <description>Queue for woodwork topic</description>
-    <property name="Name" value="WoodworkQueue"/>
-  </admin-object-resource>
-  <admin-object-resource enabled="true" jndi-name="jms/programmingQueue" object-type="user" 
-                         res-adapter="jmsra" res-type="jakarta.jms.Queue">
-      <description>Queue for programming topic</description>
-    <property name="Name" value="ProgrammingQueue"/>
-  </admin-object-resource>
-  <admin-object-resource enabled="true" jndi-name="jms/crochetQueue" object-type="user" 
-                         res-adapter="jmsra" res-type="jakarta.jms.Queue">
-      <description>Queue for crochet topic</description>
-    <property name="Name" value="CrochetQueue"/>
-  </admin-object-resource>
-  <admin-object-resource enabled="true" jndi-name="jms/miscQueue" object-type="user" 
-                         res-adapter="jmsra" res-type="jakarta.jms.Queue">
-      <description>Queue for miscellaneous topic</description>
-    <property name="Name" value="MiscQueue"/>
-    </admin-object-resource>
-  
 </resources>

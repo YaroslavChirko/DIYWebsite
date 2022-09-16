@@ -87,6 +87,7 @@ public class PostViewServlet extends HttpServlet {
 		
 		if(post == null || !post.getCathegory().equals(category)) {
 			resp.sendError(404, "No post found for provided id and category");
+			return;
 		}
 		
 		RequestDispatcher requestDispatcher = req.getRequestDispatcher("/jsp/read-post.jspx");
@@ -175,6 +176,7 @@ public class PostViewServlet extends HttpServlet {
 		if(!error.isEmpty()) {
 			resp.sendError(error.entrySet().iterator().next().getKey(),
 					error.entrySet().iterator().next().getValue());
+			return;
 		}
 		
 		User persistedUser = userRepository.getUserByEmail(sessionEmail);
@@ -183,8 +185,10 @@ public class PostViewServlet extends HttpServlet {
 		if(!error.isEmpty()) {
 			resp.sendError(error.entrySet().iterator().next().getKey(),
 					error.entrySet().iterator().next().getValue());
+			return;
 		}
 		
+		//If user was deleted and then a new one was registered with the same email he will be the owner
 		if(!persistedUser.equals(currentPost.getAuthor())) {
 			resp.sendError(403, "Current user cannot modify this post");
 			return;

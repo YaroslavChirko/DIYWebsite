@@ -18,5 +18,6 @@ public interface PostRepoInterface {
 	public List<Post> getPostsByUser(User user);
 	public Post getPostById(int id);
 	public boolean updatePost(Post post);
-	
+	public boolean deletePostById(int id);
+	public boolean deletePost(Post post);
 }

@@ -169,13 +169,47 @@ public class PostRepositoryImpl implements PostRepoInterface, Serializable {
 			e.printStackTrace();
 		}
 		
-		
-		
-		
-		
 		return bodyChanged || picturesChanged;
 	}
 	
+	
+	
+	@Override
+	public boolean deletePostById(int id) {
+		boolean res = false;
+		try {
+			transaction.begin();
+			
+				Post postToRemove = getPostById(id);
+				res = deletePost(postToRemove);
+			
+			transaction.commit();
+		} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+
+	@Override
+	public boolean deletePost(Post post) {
+		boolean res = false;
+		//retrieve post by id and check if it is the proper one
+		Post persistedPost = getPostById(post.getId());
+		if(persistedPost.equals(post)) {
+			try {
+				transaction.begin();
+					//delete if it is (call delete by id method)
+					entityManager.remove(post);
+					res = true;
+				transaction.commit();
+			} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		return res;
+	}
+
 	@PreDestroy
 	private void cleanup() {
 		entityManager.close();
