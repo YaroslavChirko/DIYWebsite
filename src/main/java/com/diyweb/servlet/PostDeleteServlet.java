@@ -21,8 +21,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.Path;
 
-@WebServlet(urlPatterns="/posts/read/*")
-@Path("/{category}/{postId}/delete")//TODO: create servlet filter to send traffic here if the last part of the path is delete
+@WebServlet(urlPatterns="/posts/read/delete/*")
+@Path("/{category}/{postId}")//TODO: create servlet filter to send traffic here if the last part of the path is delete
 public class PostDeleteServlet extends HttpServlet {
 	
 	@Inject
@@ -34,8 +34,9 @@ public class PostDeleteServlet extends HttpServlet {
 	@Inject
 	private UserAuthenticationChecker authChecker;
 	
+	//TODO:Perhaps find a way to do it with post, perhaps form for the button
 	@Override
-	protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		//get path parameters
 		Map<String, String> pathParams = UrlPathParameterExtractor.processPathParameters(getClass(), req.getPathInfo());
 		String categoryStr = pathParams.get("category");
@@ -59,7 +60,7 @@ public class PostDeleteServlet extends HttpServlet {
 		try {
 			postId = Integer.parseInt(postIdStr);
 		}catch(NumberFormatException e) {
-			resp.sendError(400, "Provided id was not a number");
+			resp.sendError(400, "Provided id was not a number ");
 			return;
 		}
 		
@@ -101,7 +102,7 @@ public class PostDeleteServlet extends HttpServlet {
 		postRepo.deletePost(currentPost);
 		
 		//redirect to current category url
-		resp.sendRedirect("/"+categoryStr);
+		resp.sendRedirect("/DIYWebsite/posts/"+categoryStr);
 	}
 
 	

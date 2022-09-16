@@ -194,19 +194,20 @@ public class PostRepositoryImpl implements PostRepoInterface, Serializable {
 	public boolean deletePost(Post post) {
 		boolean res = false;
 		//retrieve post by id and check if it is the proper one
-		Post persistedPost = getPostById(post.getId());
-		if(persistedPost.equals(post)) {
+		
 			try {
 				transaction.begin();
+				Post persistedPost = getPostById(post.getId());
+					if(persistedPost.equals(post)) {
 					//delete if it is (call delete by id method)
-					entityManager.remove(post);
+					entityManager.remove(persistedPost);
 					res = true;
+					}
 				transaction.commit();
 			} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
 				e.printStackTrace();
 			}
 			
-		}
 		return res;
 	}
 
