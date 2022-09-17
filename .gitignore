@@ -21,3 +21,11 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+#folders with property files
+src/main/resources/mail/*
+!src/main/resources/mail/*-example.properties
+target/*
+!target/DIYWebsite/WEB-INF/*.xml
+
+**/glassfish-resources.xml
