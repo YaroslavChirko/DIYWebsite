@@ -1,5 +1,0 @@
-Welcome to DIYWebsite,
-if you see this message, your e-mail address was used to register on [URL]
-if it wasn't you you can safely ignore this message
-if you wish to activate [Name] account follow the link below
-[URL]/verify/[UserEmail]/[UserToken];
