@@ -36,4 +36,8 @@ public class UrlPathParameterExtractor {
 		for(int i = 0; i<length; i++) result.put(pathParts[i].substring(1, pathParts[i].length()-1), urlParts[i]);
 		return result;
 	}
+	
+	public static Map<Integer, String> checkPathParams(Map<String, String> pathParams){
+		
+	}
 }
