@@ -17,6 +17,7 @@ import com.diyweb.misc.UserAuthenticationChecker;
 import com.diyweb.models.Cathegory;
 import com.diyweb.models.Post;
 import com.diyweb.models.User;
+import com.diyweb.repo.CommentRepoInterface;
 import com.diyweb.repo.PostRepoInterface;
 import com.diyweb.repo.UserRepoInterface;
 
@@ -50,6 +51,9 @@ public class PostViewServlet extends HttpServlet {
 	private ImageSaver imageSaver;
 	@Inject
 	private UserAuthenticationChecker userAuthChecker;
+	
+	@Inject
+	private CommentRepoInterface commentRepo;
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -113,6 +117,10 @@ public class PostViewServlet extends HttpServlet {
 		req.setAttribute("post", post);
 		req.setAttribute("typesBean",Cathegory.values());
 		req.setAttribute("host", imageProps.getOrDefault("images.save.host", "http://localhost:8080"));
+		req.setAttribute("comments", /*post.getComments()*/commentRepo.getCommentsByPost(post));
+		//System.out.println("Comments from here: "+post.getComments());
+		
+		System.out.println("Comments from base: "+commentRepo.getCommentsByPost(post));
 		
 		requestDispatcher.forward(req, resp);
 	}

@@ -52,10 +52,14 @@ public class CommentRepositoryImpl implements CommentRepoInterface, Serializable
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 * Retrieves comments for provided post;<br/>
+	 * only comments with no replying to specified are retrieved do avoid duplicates
+	 * 
+	 */
 	@Override
 	public List<Comment> getCommentsByPost(Post post) {
-		String queryStr = "Select c from Comment c Where c.origin = :post";
+		String queryStr = "Select c from Comment c Where c.origin = :post And c.replyingTo = null";
 		Query query = entityManager.createQuery(queryStr);
 		query.setParameter("post", post);
 		

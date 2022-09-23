@@ -1,14 +1,18 @@
 package com.diyweb.models;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import internal.com.sun.istack.Nullable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -39,14 +43,18 @@ public class Comment {
     private String body;
     
     //TODO: FK
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "post_id", nullable = false)
     private Post origin;
+	
     private LocalDateTime postedAt;
     
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @Nullable
     private Comment replyingTo;//can be null
+    
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "replyingTo")
+	private Set<Comment> replies;
 
     public Comment() {}
     
@@ -133,16 +141,47 @@ public class Comment {
 		res = res*prime + body.hashCode();
 		res = res*prime + origin.hashCode();
 		res = res*prime + postedAt.hashCode();
-		res = res*prime + replyingTo.hashCode();
+		res = res*prime + (replyingTo==null?0:replyingTo.hashCode());
 		return res;
 	}
 
 	@Override
 	public String toString() {
-		return "COMMENT: { Author\'s name: "+author.getName()+",\nCropped body"+body.substring(0, 100)+
+		String str = "COMMENT: { Author\'s name: "+author.getName()+",\nCropped body"+body.substring(0, Math.min(body.length(), 100))+
 				"... ,/nFrom post with title"+origin.getTitle()+", posted at: "
-				+postedAt+", Replying to: "+replyingTo.author.getName()+" };";
+				+postedAt;
+		if(replyingTo != null) {
+			str += ", Replying to: "+replyingTo.author.getName();
+		}
+		
+		str += " };";
+		return str;
 	}
     
+	public String returnHtmlTree() {
+		StringBuilder resultBuilder = new StringBuilder();
+		
+		resultBuilder.append("<div id=\"comment-holder\">");
+		resultBuilder.append("<h4>"+this.getAuthor().getEmail()+"</h4>");
+		resultBuilder.append("<h5>"+this.getPostedAt()+"</h5>");
+		resultBuilder.append("<p>"+this.getBody()+"</p>");
+		resultBuilder.append("<form action=\"/DIYWebsite/comment/add/"+this.getOrigin().getCathegory()+"/"+this.getOrigin().getId()+"\" method=\"post\" class=\"col-2\" id=\"reply-form-"+this.getId()+"\">");
+		resultBuilder.append("<input type=\"hidden\" name=\"to-reply\" value=\""+this.getId()+"\" />");
+		resultBuilder.append("<button class=\"btn btn-link reply-form-btn\" type=\"button\" onclick=\"addReplyForm("+this.getId()+")\" id=\"reply-form-button-"+this.getId()+"\">Add Reply</button>");
+		resultBuilder.append("</form>");
+		resultBuilder.append("<form action=\"/DIYWebsite/comment/delete/"+this.getOrigin().getCathegory()+"/"+this.getOrigin().getId()+"/"+this.getId()+"\" method=\"post\" class=\"col-2\">");
+		resultBuilder.append("<button class=\"btn btn-danger\">Delete Comment</button>");
+		resultBuilder.append("</form>");
+		resultBuilder.append("</div>");
+		
+		for(Comment reply: this.replies) {
+			resultBuilder.append("<div style=\"margin-left:40px;\">");
+			resultBuilder.append(reply.returnHtmlTree());
+			resultBuilder.append("</div>");
+		}
+		
+		
+		return resultBuilder.toString();
+	}
     
 }

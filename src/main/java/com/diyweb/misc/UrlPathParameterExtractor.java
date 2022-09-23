@@ -37,7 +37,4 @@ public class UrlPathParameterExtractor {
 		return result;
 	}
 	
-	public static Map<Integer, String> checkPathParams(Map<String, String> pathParams){
-		
-	}
 }

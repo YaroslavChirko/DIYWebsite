@@ -5,8 +5,10 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -44,8 +46,7 @@ public class Post {
     private List<String> pictureUrls; //paths to pictures used in the body, perhaps make field for tumbnail too
     private LocalDateTime postedAt;
     
-    //TODO: FK
-    @OneToMany
+    @OneToMany(mappedBy="origin", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "comment_id", unique = true)
     private List<Comment> comments;
 
