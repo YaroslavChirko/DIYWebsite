@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.diyweb.models.Cathegory;
+import com.diyweb.models.Comment;
 import com.diyweb.models.Post;
 import com.diyweb.models.User;
 

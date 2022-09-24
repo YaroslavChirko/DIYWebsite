@@ -11,5 +11,5 @@ public interface CommentRepoInterface {
 	public Comment getCommentById(int id);
 	public boolean updateComment(Comment comment);
 	public void addReply(Comment reply, Comment toReply);
-	
+	public void deleteComment(Comment toDelete);
 }

@@ -2,6 +2,7 @@ package com.diyweb.models;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 import internal.com.sun.istack.Nullable;
 import jakarta.persistence.CascadeType;
@@ -43,7 +44,7 @@ public class Comment {
     private String body;
     
     //TODO: FK
-	@ManyToOne(cascade = CascadeType.REMOVE)
+	@ManyToOne//(cascade = CascadeType.REMOVE)
 	@JoinColumn(name = "post_id", nullable = false)
     private Post origin;
 	
@@ -118,6 +119,14 @@ public class Comment {
 		this.replyingTo = replyingTo;
 	}
 
+	public Set<Comment> getReplies() {
+		return replies;
+	}
+
+	public void setReplies(Set<Comment> replies) {
+		this.replies = replies;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if(!(obj instanceof Comment)) {
@@ -125,12 +134,17 @@ public class Comment {
 		}
 		
 		Comment other = (Comment)obj;
-		
+		boolean replying = false;
+		if(replyingTo == null && other.getReplyingTo() == null) {
+			replying = true;
+		}else if(replyingTo != null) {
+			replying = replyingTo.equals(other.getReplyingTo());
+		}
 		return author.equals(other.getAuthor()) 
 				&& body.equals(other.getBody()) 
 				&& origin.equals(other.getOrigin()) 
 				&& postedAt.equals(other.getPostedAt()) 
-				&& replyingTo.equals(other.getReplyingTo());
+				&& replying;
 	}
 
 	@Override
@@ -158,25 +172,34 @@ public class Comment {
 		return str;
 	}
     
-	public String returnHtmlTree() {
+	public String returnHtmlTree(String sessionEmail, UUID sessionIdentifier) {
 		StringBuilder resultBuilder = new StringBuilder();
 		
 		resultBuilder.append("<div id=\"comment-holder\">");
 		resultBuilder.append("<h4>"+this.getAuthor().getEmail()+"</h4>");
 		resultBuilder.append("<h5>"+this.getPostedAt()+"</h5>");
 		resultBuilder.append("<p>"+this.getBody()+"</p>");
-		resultBuilder.append("<form action=\"/DIYWebsite/comment/add/"+this.getOrigin().getCathegory()+"/"+this.getOrigin().getId()+"\" method=\"post\" class=\"col-2\" id=\"reply-form-"+this.getId()+"\">");
-		resultBuilder.append("<input type=\"hidden\" name=\"to-reply\" value=\""+this.getId()+"\" />");
-		resultBuilder.append("<button class=\"btn btn-link reply-form-btn\" type=\"button\" onclick=\"addReplyForm("+this.getId()+")\" id=\"reply-form-button-"+this.getId()+"\">Add Reply</button>");
-		resultBuilder.append("</form>");
-		resultBuilder.append("<form action=\"/DIYWebsite/comment/delete/"+this.getOrigin().getCathegory()+"/"+this.getOrigin().getId()+"/"+this.getId()+"\" method=\"post\" class=\"col-2\">");
-		resultBuilder.append("<button class=\"btn btn-danger\">Delete Comment</button>");
-		resultBuilder.append("</form>");
+		
+		if(!sessionEmail.equals("") && !sessionIdentifier.equals(null)) {
+			resultBuilder.append("<form action=\"/DIYWebsite/comment/add/"+this.getOrigin().getCathegory()+"/"+this.getOrigin().getId()+"\" method=\"post\" class=\"col-2\" id=\"reply-form-"+this.getId()+"\">");
+			resultBuilder.append("<input type=\"hidden\" name=\"to-reply\" value=\""+this.getId()+"\" />");
+			resultBuilder.append("<button class=\"btn btn-link reply-form-btn\" type=\"button\" onclick=\"addReplyForm("+this.getId()+")\" id=\"reply-form-button-"+this.getId()+"\">Add Reply</button>");
+			resultBuilder.append("</form>");
+		}
+		
+		if(!sessionEmail.equals("") && !sessionIdentifier.equals(null)
+				&&sessionEmail.equals(this.getAuthor().getEmail())
+				&&sessionIdentifier.equals(this.getAuthor().getUserIdentifier())) {
+			resultBuilder.append("<form action=\"/DIYWebsite/comment/delete/"+this.getOrigin().getCathegory()+"/"+this.getOrigin().getId()+"\" method=\"post\" class=\"col-2\">");
+			resultBuilder.append("<input type=\"hidden\" name=\"comment-id\" value=\""+this.getId()+"\">");
+			resultBuilder.append("<button class=\"btn btn-danger\">Delete Comment</button>");
+			resultBuilder.append("</form>");
+		}
 		resultBuilder.append("</div>");
 		
 		for(Comment reply: this.replies) {
 			resultBuilder.append("<div style=\"margin-left:40px;\">");
-			resultBuilder.append(reply.returnHtmlTree());
+			resultBuilder.append(reply.returnHtmlTree(sessionEmail, sessionIdentifier));
 			resultBuilder.append("</div>");
 		}
 		

@@ -68,15 +68,18 @@
 	        	<div id="post-body"><p>${post.body}</p></div><br/>
         	</div>
         	<div id="comment-holder">
-        		<div id="add-comment-form">
-        			<form action="/DIYWebsite/comment/add/${post.cathegory}/${post.id}" method="post">
-        				<textarea name="comment-body" rows="5" cols="50" class="col-12">Comment here...</textarea>
-        				<button class="btn btn-primary col-2 ml-5">Add Comment</button>
-        			</form>
-        		</div>
+        		<c:if test="${not empty sessionScope.userEmail and not empty sessionScope.userIdentifier}">
+        			<div id="add-comment-form">
+	        			<form action="/DIYWebsite/comment/add/${post.cathegory}/${post.id}" method="post">
+	        				<textarea name="comment-body" rows="5" cols="50" class="col-12">Comment here...</textarea>
+	        				<button class="btn btn-primary col-2 ml-5">Add Comment</button>
+	        			</form>
+	        		</div>
+        		</c:if>
+        		
         		<div id="comments-display">
         			<c:forEach items="${comments}" var="comment">
-        				${comment.returnHtmlTree()}
+        				${comment.returnHtmlTree(sessionScope.userEmail, sessionScope.userIdentifier)}
         			</c:forEach>
  
         		</div>

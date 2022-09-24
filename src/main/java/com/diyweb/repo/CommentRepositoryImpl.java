@@ -80,8 +80,9 @@ public class CommentRepositoryImpl implements CommentRepoInterface, Serializable
 		}
 		
 		try {
+			current.setBody(comment.getBody());
 			transaction.begin();
-				current.setBody(comment.getBody());
+				entityManager.merge(current);
 			transaction.commit();
 		}catch(NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
 			e.printStackTrace();
@@ -100,6 +101,22 @@ public class CommentRepositoryImpl implements CommentRepoInterface, Serializable
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public void deleteComment(Comment toDelete) {
+			try {
+				transaction.begin();
+					Comment current = getCommentById(toDelete.getId());
+					System.out.println("Current comment: "+current);
+					System.out.println("To delete comment: "+toDelete);
+					if(current != null && current.equals(toDelete)) {
+						entityManager.remove(current);
+					}
+				transaction.commit();
+			} catch (NotSupportedException | SystemException | SecurityException | IllegalStateException | RollbackException | HeuristicMixedException | HeuristicRollbackException e) {
+				e.printStackTrace();
+			}
+				
 	}
 
 }
