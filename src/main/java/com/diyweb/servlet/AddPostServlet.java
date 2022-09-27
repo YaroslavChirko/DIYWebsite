@@ -24,6 +24,7 @@ import com.diyweb.models.Post;
 import com.diyweb.models.User;
 import com.diyweb.repo.PostRepoInterface;
 import com.diyweb.repo.UserRepoInterface;
+import com.diyweb.websockets.CategoryMessageService;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.RequestDispatcher;
@@ -132,6 +133,9 @@ public class AddPostServlet extends HttpServlet {
 		}
 		
 		postRepo.persist(currentPost);
+		CategoryMessageService.sendUpdateAck(pathCategory);
+		System.out.println("Message was sent");
+		resp.sendRedirect("./DIYWebsite/posts/"+pathCategory);
 	}
 
 	

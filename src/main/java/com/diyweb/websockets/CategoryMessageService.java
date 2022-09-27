@@ -1,0 +1,41 @@
+package com.diyweb.websockets;
+
+import java.io.IOException;
+
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.PathParam;
+import jakarta.websocket.server.ServerEndpoint;
+
+@ServerEndpoint("/websocket/posts/{category}")
+public class CategoryMessageService{
+	
+	private static Session session;
+	
+	@OnOpen
+	public void openConnection(Session passedSession, @PathParam("category") String category) {
+		session = passedSession;
+		System.out.println("session opened: "+session.getPathParameters().get("category"));
+	}
+	
+	public void closeConnection(Session session) {
+		System.out.println("session closed: "+session.getPathParameters().get("category"));
+	}
+	
+	public static void sendUpdateAck(@PathParam("category") String category) {
+		
+		if(session != null) {
+			System.out.println("Open sessions: "+session.getOpenSessions());
+			for(Session clientSession : session.getOpenSessions()) {
+				if(clientSession.getPathParameters().get("category").equals(category)){
+					try {
+						System.out.println("sending to client");
+						clientSession.getBasicRemote().sendText("New post was added to "+category);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+}
