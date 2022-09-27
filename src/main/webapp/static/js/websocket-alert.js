@@ -12,3 +12,8 @@ function connectToUpdates(category){
 function onMessage(msg){
 	alert(msg.data);
 }
+
+function disconnect(){
+	webSocket.close();
+	webSocket = null;
+}

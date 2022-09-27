@@ -10,7 +10,7 @@
     	<link href="http://localhost:8080/DIYWebsite/static/css/cards.css" rel="stylesheet"/>
     	<script src="/DIYWebsite/static/js/websocket-alert.js" type="text/javascript">1</script>
 	</head>
-    <body>
+    <body onunload="disconnect()">
     	<nav class="navbar bg-dark navbar-expand-sm fixed-top">
     		<div class="container">
     			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#Navbar">

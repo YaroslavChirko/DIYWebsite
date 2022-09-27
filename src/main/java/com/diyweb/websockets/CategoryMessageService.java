@@ -2,6 +2,7 @@ package com.diyweb.websockets;
 
 import java.io.IOException;
 
+import jakarta.websocket.OnClose;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.PathParam;
@@ -18,6 +19,7 @@ public class CategoryMessageService{
 		System.out.println("session opened: "+session.getPathParameters().get("category"));
 	}
 	
+	@OnClose
 	public void closeConnection(Session session) {
 		System.out.println("session closed: "+session.getPathParameters().get("category"));
 	}
@@ -25,7 +27,6 @@ public class CategoryMessageService{
 	public static void sendUpdateAck(@PathParam("category") String category) {
 		
 		if(session != null) {
-			System.out.println("Open sessions: "+session.getOpenSessions());
 			for(Session clientSession : session.getOpenSessions()) {
 				if(clientSession.getPathParameters().get("category").equals(category)){
 					try {
