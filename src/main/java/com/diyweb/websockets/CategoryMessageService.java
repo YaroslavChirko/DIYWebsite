@@ -22,6 +22,7 @@ public class CategoryMessageService{
 	@OnClose
 	public void closeConnection(Session session) {
 		System.out.println("session closed: "+session.getPathParameters().get("category"));
+		session = null;
 	}
 	
 	public static void sendUpdateAck(@PathParam("category") String category) {
@@ -30,7 +31,6 @@ public class CategoryMessageService{
 			for(Session clientSession : session.getOpenSessions()) {
 				if(clientSession.getPathParameters().get("category").equals(category)){
 					try {
-						System.out.println("sending to client");
 						clientSession.getBasicRemote().sendText("New post was added to "+category);
 					} catch (IOException e) {
 						e.printStackTrace();

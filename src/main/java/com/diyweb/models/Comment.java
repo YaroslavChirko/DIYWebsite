@@ -172,6 +172,14 @@ public class Comment {
 		return str;
 	}
     
+	/**
+	 * This method is used to provide proper representation of comment-reply structure<br/>
+	 * changes to the structure should be made here<br/>
+	 * This may not be the best or the cleanest option but at least it works properly
+	 * @param sessionEmail
+	 * @param sessionIdentifier
+	 * @return HTML tree comprised of comments and their replies
+	 */
 	public String returnHtmlTree(String sessionEmail, UUID sessionIdentifier) {
 		StringBuilder resultBuilder = new StringBuilder();
 		

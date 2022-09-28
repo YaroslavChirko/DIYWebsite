@@ -15,6 +15,7 @@ import com.diyweb.models.User;
 import com.diyweb.repo.CommentRepoInterface;
 import com.diyweb.repo.PostRepoInterface;
 import com.diyweb.repo.UserRepoInterface;
+import com.diyweb.websockets.CommentSocketService;
 
 import jakarta.inject.Inject;
 import jakarta.servlet.ServletException;
@@ -145,7 +146,9 @@ public class AddCommentServlet extends HttpServlet {
 		
 		//persist comment
 		commentRepo.persist(addedComment);
-		
+		System.out.println("Sending message...");
+		CommentSocketService.sendCommentMessage(categoryStr, pathIdStr);
+		resp.sendRedirect("/DIYWebsite/comment/add/"+categoryStr+"/"+postId);
 	}
 	
 	
