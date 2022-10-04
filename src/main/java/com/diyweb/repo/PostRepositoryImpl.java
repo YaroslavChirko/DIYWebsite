@@ -138,6 +138,15 @@ public class PostRepositoryImpl implements PostRepoInterface, Serializable {
 	public Post getPostById(int id) {
 		return entityManager.find(Post.class, id);
 	}
+	
+	public Post getPostByIdAndCategory(int id, Cathegory category) {
+		String queryStr = "Select * from Post p Where p.id = :id And p.cathegory = :category";
+		Query query = entityManager.createQuery(queryStr);
+		query.setParameter("id", id);
+		query.setParameter("category", category);
+		
+		return (Post)query.getSingleResult();
+	}
 
 	/**
 	 * Only body and pictures should be changeable since title is used to persist images<br/>

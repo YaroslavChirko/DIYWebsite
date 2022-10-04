@@ -1,9 +1,11 @@
 package com.diyweb.servlet;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Map;
 import java.util.UUID;
 
+import com.diyweb.misc.PathVariableCaster;
 import com.diyweb.misc.UrlPathParameterExtractor;
 import com.diyweb.misc.UserAuthenticationChecker;
 import com.diyweb.models.Cathegory;
@@ -63,52 +65,27 @@ public class DeleteCommentServlet extends HttpServlet {
 		}
 		
 		//retrieve path parameters
-		Map<String, String> pathParams = UrlPathParameterExtractor.processPathParameters(getClass(), req.getPathInfo());
-		//check map and params themselves
-		if(pathParams.isEmpty()) {
-			resp.sendError(400, "Path contains no parameters");
-			return;
-		}
-		
-		String categoryStr = pathParams.get("category");
-		String pathIdStr = pathParams.get("postId");
-		
-		if(categoryStr == null || categoryStr.trim().equals("")) {
-			resp.sendError(400, "Category was either empty or null");
-			return;
-		}
-		if(pathIdStr == null || pathIdStr.trim().equals("")) {
-			resp.sendError(400, "Post id from path was empty or null");
-			return;
-		}
-		
-		//cast to corresponding types
-		Cathegory category = null;
-		try {
-			category = Cathegory.valueOf(categoryStr);
-		}catch(IllegalArgumentException e) {
-			resp.sendError(400, "Provided category wasn\'t found: "+e.getMessage());
-			return;
-		}
-		
+		Map<String, String> pathVariables = UrlPathParameterExtractor.processPathParameters(getClass(), req.getPathInfo());
 		int postId = -1;
 		try {
-			postId = Integer.parseInt(pathIdStr);
-		}catch(NumberFormatException e) {
-			resp.sendError(400, "Provided id was not an integer: "+e.getMessage());
+			postId = PathVariableCaster.castPathVariableByName(pathVariables, "postId", Integer.class);
+		} catch (ParseException e) {
+			resp.sendError(400, e.getMessage());
+			return;
+		}
+		
+		Cathegory category = null;
+		try {
+			category = PathVariableCaster.castPathVariableByName(pathVariables, "category", Cathegory.class);
+		} catch (ParseException e) {
+			resp.sendError(400, e.getMessage());
 			return;
 		}
 		
 		//retrieve post
-		Post persistedPost = postRepo.getPostById(postId);
+		Post persistedPost = postRepo.getPostByIdAndCategory(postId, category);
 		if(persistedPost == null) {
-			resp.sendError(404, "Requested post wasn\'t found, check passed post id");
-			return;
-		}
-		
-		//compare post category to current one
-		if(!persistedPost.getCathegory().equals(category)) {
-			resp.sendError(400, "Provided category is not applicable for current post");
+			resp.sendError(404, "Requested post wasn\'t found, check passed post id or category");
 			return;
 		}
 		

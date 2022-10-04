@@ -2,6 +2,7 @@ package com.diyweb.servlet;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import java.util.regex.Pattern;
 
 import com.diyweb.misc.HtmlTextEscapingUtils;
 import com.diyweb.misc.ImageSaver;
+import com.diyweb.misc.PathVariableCaster;
 import com.diyweb.misc.UrlPathParameterExtractor;
 import com.diyweb.misc.UserAuthenticationChecker;
 import com.diyweb.models.Cathegory;
@@ -47,43 +49,34 @@ public class PostViewServlet extends HttpServlet {
 	private UserRepoInterface userRepository;
 	@Inject
 	private PostRepoInterface postRepository;
+	@Inject
+	private CommentRepoInterface commentRepo;
 	@Inject 
 	private ImageSaver imageSaver;
 	@Inject
 	private UserAuthenticationChecker userAuthChecker;
-	
-	@Inject
-	private CommentRepoInterface commentRepo;
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		Properties imageProps = new Properties();
 		imageProps.load(new FileInputStream(propertyPath));
 		
+		//get path variables once to then parse them properly
 		Map<String, String> pathVariables = UrlPathParameterExtractor.processPathParameters(getClass(), req.getPathInfo());
 		
-		String categoryStr = pathVariables.get("category");
-		String postIdStr = pathVariables.get("postId");
-		
-		if(categoryStr == null || postIdStr == null || categoryStr.equals("") || postIdStr.equals("")) {
-			resp.sendError(404, "Post or category was either null or empty");
-			return;
-		}
-		
 		int postId = -1;
-		
-		try {			
-			postId = Integer.parseInt(postIdStr);
-		}catch(NumberFormatException e) {
-			resp.sendError(404, "Provided id was not formatted properly");
+		try {
+			postId = PathVariableCaster.castPathVariableByName(pathVariables, "postId", Integer.class);
+		} catch (ParseException e) {
+			resp.sendError(400, e.getMessage());
 			return;
 		}
 		
 		Cathegory category = null;
 		try {
-			category = Cathegory.valueOf(categoryStr);
-		}catch(IllegalArgumentException e) {
-			resp.sendError(404, "Invalid category provided");
+			category = PathVariableCaster.castPathVariableByName(pathVariables, "category", Cathegory.class);
+		} catch (ParseException e) {
+			resp.sendError(400, e.getMessage());
 			return;
 		}
 		
@@ -133,39 +126,24 @@ public class PostViewServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		//check path variables and category
 		Map<String, String> pathVariables = UrlPathParameterExtractor.processPathParameters(getClass(), req.getPathInfo());
-		
-		if(pathVariables.isEmpty()) {
-			resp.sendError(400, "No path variables provided");
-			return;
-		}
-		
-		String categoryStr = pathVariables.get("category");
-		String postIdStr = pathVariables.get("postId");
-		
-		if(categoryStr == null || postIdStr == null || categoryStr.equals("") || postIdStr.equals("")) {
-			resp.sendError(404, "Post or category was either null or empty");
-			return;
-		}
-		
-		int postIdInt = -1;
+		int postId = -1;
 		try {
-			postIdInt = Integer.parseInt(postIdStr);
-		}catch(NumberFormatException e) {
-			resp.sendError(400, "Provided id was not an integer: "+e.getMessage());
+			postId = PathVariableCaster.castPathVariableByName(pathVariables, "postId", Integer.class);
+		} catch (ParseException e) {
+			resp.sendError(400, e.getMessage());
 			return;
 		}
 		
 		Cathegory category = null;
-		
 		try {
-			category = Cathegory.valueOf(categoryStr);
-		}catch(IllegalArgumentException e) {
-			resp.sendError(400, "Provided category wasn\'t found: "+e.getMessage());
+			category = PathVariableCaster.castPathVariableByName(pathVariables, "category", Cathegory.class);
+		} catch (ParseException e) {
+			resp.sendError(400, e.getMessage());
 			return;
 		}
 		
 		//retrieve original post by id and compare it's category
-		Post currentPost = postRepository.getPostById(postIdInt);
+		Post currentPost = postRepository.getPostById(postId);
 		
 		if(currentPost == null) {
 			resp.sendError(404, "Post for provided id wasn\'t found");

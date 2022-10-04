@@ -18,6 +18,7 @@ public interface PostRepoInterface {
 	public Map<Cathegory, List<Post>> getLastTenPostsByCathegories();
 	public List<Post> getPostsByUser(User user);
 	public Post getPostById(int id);
+	public Post getPostByIdAndCategory(int id, Cathegory category);
 	public boolean updatePost(Post post);
 	public boolean deletePostById(int id);
 	public boolean deletePost(Post post);

@@ -3,6 +3,7 @@ package com.diyweb.repo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.jasypt.util.password.StrongPasswordEncryptor;
@@ -73,6 +74,15 @@ public class UserRepositoryImpl implements UserRepoInterface, Serializable {
 	//perhaps left join is needed
 	public User getUserByEmail(String email) {
 		return entityManager.find(User.class, email);
+	}
+	
+	public User getUserByEmailAndIdentifier(String email, UUID userIdentifier) {
+		String queryStr = "Select u From User u Where u.email = :email And u.userIdentifier = :identifier";
+		Query query = entityManager.createQuery(queryStr);
+		query.setParameter("email", email);
+		query.setParameter("identifier", userIdentifier);
+		
+		return (User)query.getSingleResult(); 
 	}
 
 	public boolean updateUsername(User user) {

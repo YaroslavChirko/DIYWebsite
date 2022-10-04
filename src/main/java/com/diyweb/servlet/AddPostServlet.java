@@ -134,7 +134,6 @@ public class AddPostServlet extends HttpServlet {
 		
 		postRepo.persist(currentPost);
 		CategoryMessageService.sendUpdateAck(pathCategory);
-		System.out.println("Message was sent");
 		resp.sendRedirect("./DIYWebsite/posts/"+pathCategory);
 	}
 

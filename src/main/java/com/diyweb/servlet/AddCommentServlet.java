@@ -1,11 +1,14 @@
 package com.diyweb.servlet;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.UUID;
 
 import com.diyweb.misc.HtmlTextEscapingUtils;
+import com.diyweb.misc.PathVariableCaster;
+import com.diyweb.misc.SessionAttributeRetriever;
 import com.diyweb.misc.UrlPathParameterExtractor;
 import com.diyweb.misc.UserAuthenticationChecker;
 import com.diyweb.models.Cathegory;
@@ -48,63 +51,34 @@ public class AddCommentServlet extends HttpServlet {
 		}
 		commentBody = HtmlTextEscapingUtils.escapeHtmlText(commentBody);
 		
-		String sessionEmail = (String)req.getSession().getAttribute("userEmail");
-		UUID sessionIdentifier = (UUID)req.getSession().getAttribute("userIdentifier");
-		
-		Map<Integer, String> error = authChecker.checkPassedUserCredentials(sessionEmail, sessionIdentifier);
-		if(!error.isEmpty()) {
-			resp.sendError(error.entrySet().iterator().next().getKey(),
-					error.entrySet().iterator().next().getValue());
+		//getting user with the help of session user attributes
+		User persistedUser = null;
+		try {
+			persistedUser = authChecker.getUserFromSessionAttributes(req.getSession(), "userEmail", "userIdentifier");
+		}catch(RuntimeException e) {
+			resp.sendError(400, e.getMessage());
 			return;
 		}
-		
-		User persistedUser = userRepo.getUserByEmail(sessionEmail);
-		error = authChecker.checkUserAuthentication(persistedUser, sessionIdentifier);
-		if(!error.isEmpty()) {
-			resp.sendError(error.entrySet().iterator().next().getKey(),
-					error.entrySet().iterator().next().getValue());
-			return;
-		}
-		
 		if(persistedUser == null) {
-			resp.sendError(404, "Requested user was not found");
+			resp.sendError(404, "User was not found");
 			return;
 		}
 		
 		//retrieve path parameters
-		Map<String, String> pathParams = UrlPathParameterExtractor.processPathParameters(getClass(), req.getPathInfo());
-		//check map and params themselves
-		if(pathParams.isEmpty()) {
-			resp.sendError(400, "Path contains no parameters");
-			return;
-		}
-		
-		String categoryStr = pathParams.get("category");
-		String pathIdStr = pathParams.get("postId");
-		
-		if(categoryStr == null || categoryStr.trim().equals("")) {
-			resp.sendError(400, "Category was either empty or null");
-			return;
-		}
-		if(pathIdStr == null || pathIdStr.trim().equals("")) {
-			resp.sendError(400, "Post id from path was empty or null");
-			return;
-		}
-		
-		//cast to corresponding types
-		Cathegory category = null;
-		try {
-			category = Cathegory.valueOf(categoryStr);
-		}catch(IllegalArgumentException e) {
-			resp.sendError(400, "Provided category wasn\'t found: "+e.getMessage());
-			return;
-		}
-		
+		Map<String, String> pathVariables = UrlPathParameterExtractor.processPathParameters(getClass(), req.getPathInfo());
 		int postId = -1;
 		try {
-			postId = Integer.parseInt(pathIdStr);
-		}catch(NumberFormatException e) {
-			resp.sendError(400, "Provided id was not an integer: "+e.getMessage());
+			postId = PathVariableCaster.castPathVariableByName(pathVariables, "postId", Integer.class);
+		} catch (ParseException e) {
+			resp.sendError(400, e.getMessage());
+			return;
+		}
+		
+		Cathegory category = null;
+		try {
+			category = PathVariableCaster.castPathVariableByName(pathVariables, "category", Cathegory.class);
+		} catch (ParseException e) {
+			resp.sendError(400, e.getMessage());
 			return;
 		}
 		
@@ -120,6 +94,7 @@ public class AddCommentServlet extends HttpServlet {
 			resp.sendError(400, "Provided category is not applicable for current post");
 			return;
 		}
+		
 		Comment addedComment = new Comment(persistedUser, commentBody, persistedPost);
 		
 		//check if toReply id was added
@@ -130,6 +105,7 @@ public class AddCommentServlet extends HttpServlet {
 			String name = names.nextElement();
 			if(name.equals("to-reply")) {
 				isReplying = true;
+				break;
 			}
 		}
 		
@@ -146,10 +122,7 @@ public class AddCommentServlet extends HttpServlet {
 		
 		//persist comment
 		commentRepo.persist(addedComment);
-		System.out.println("Sending message...");
-		CommentSocketService.sendCommentMessage(categoryStr, pathIdStr);
-		resp.sendRedirect("/DIYWebsite/comment/add/"+categoryStr+"/"+postId);
+		CommentSocketService.sendCommentMessage(category.name(), ""+postId);
+		resp.sendRedirect("/DIYWebsite/posts/read/"+category.name()+"/"+postId);
 	}
-	
-	
 }

@@ -90,4 +90,26 @@ public class UserAuthenticationChecker {
 		}
 		return error;
 	}
+	
+	public User getUserFromSessionAttributes(HttpSession session, String emailAttrName, String identifierAttrName) {
+		String sessionEmail = SessionAttributeRetriever.getAttributeByName(session, emailAttrName, String.class);
+		UUID sessionIdentifier = SessionAttributeRetriever.getAttributeByName(session, identifierAttrName, UUID.class);
+		
+		Map<Integer, String> error = this.checkPassedUserCredentials(sessionEmail, sessionIdentifier);
+		if(!error.isEmpty()) {
+			throw new RuntimeException(error.entrySet().iterator().next().getValue());
+		}
+		
+		User persistedUser = userRepo.getUserByEmail(sessionEmail);
+		error = this.checkUserAuthentication(persistedUser, sessionIdentifier);
+		if(!error.isEmpty()) {
+			throw new RuntimeException(error.entrySet().iterator().next().getValue());
+		}
+		
+		if(persistedUser == null) {
+			throw new RuntimeException("Requested user was not found");
+		}
+		
+		return persistedUser;
+	}
 }
