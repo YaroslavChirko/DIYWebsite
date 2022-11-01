@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 import com.diyweb.misc.HtmlTextEscapingUtils;
 import com.diyweb.misc.ImageSaver;
+import com.diyweb.misc.PathVariableCaster;
 import com.diyweb.misc.UrlPathParameterExtractor;
 import com.diyweb.misc.UserAuthenticationChecker;
 import com.diyweb.models.Cathegory;
@@ -79,7 +81,7 @@ public class AddPostServlet extends HttpServlet {
 		//get body from request
 		String body = req.getParameter("postBody");
 		//get category from path
-		String  pathCategory = UrlPathParameterExtractor.processPathParameters(getClass(), req.getPathInfo()).get("category");
+		Map<String, String> pathVariables = UrlPathParameterExtractor.processPathParameters(getClass(), req.getPathInfo());
 		
 		if(title == null || title.trim().equals("")) {
 			resp.sendError(400, "Title was not provided or was empty");
@@ -91,14 +93,11 @@ public class AddPostServlet extends HttpServlet {
 			return;
 		}
 		
-		if(pathCategory == null || pathCategory.trim().equals("")) {
-			resp.sendError(400, "Category empty or is null");
-			return;
-		}
-		
-		Cathegory category = Cathegory.valueOf(pathCategory);
-		if(category == null) {
-			resp.sendError(400, "Category not found in a list");
+		Cathegory category = null;
+		try {
+			category = PathVariableCaster.castPathVariableByName(pathVariables, "category", Cathegory.class);
+		} catch (ParseException e) {
+			resp.sendError(400, e.getMessage());
 			return;
 		}
 		
@@ -133,8 +132,8 @@ public class AddPostServlet extends HttpServlet {
 		}
 		
 		postRepo.persist(currentPost);
-		CategoryMessageService.sendUpdateAck(pathCategory);
-		resp.sendRedirect("./DIYWebsite/posts/"+pathCategory);
+		CategoryMessageService.sendUpdateAck(category.name());
+		resp.sendRedirect("./DIYWebsite/posts/"+category.name());
 	}
 
 	

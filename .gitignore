@@ -29,3 +29,4 @@ hs_err_pid*
 !**/target/DIYWebsite/WEB-INF/*.xml
 
 **/glassfish-resources.xml
+**/css/fontawesome-free-6.2.0-web/*
